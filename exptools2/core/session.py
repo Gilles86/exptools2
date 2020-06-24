@@ -70,7 +70,12 @@ class Session:
         self.settings = self._load_settings()
         self.monitor = self._create_monitor()
         self.win = self._create_window()
-        self.mouse = Mouse(**self.settings['mouse'])
+
+        if self.settings['mouse'].get('setup'):
+            self.mouse = Mouse(**self.settings['mouse'])
+        else:
+            self.mouse = None
+
         self.logfile = self._create_logfile()
         self.default_fix = create_circle_fixation(self.win, radius=0.075, color=(1, 1, 1))
         self.mri_trigger = None  # is set below
