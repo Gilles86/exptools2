@@ -7,6 +7,9 @@ from psychopy import logging
 # TODO:
 # - add port_log (like dict(phase=code)) to trial init
 
+# event_type values that Session.close() treats as non-phase rows
+RESERVED_EVENT_TYPES = ('response', 'trigger', 'pulse')
+
 
 class Trial:
     """ Base class for Trial objects. """
@@ -79,6 +82,15 @@ class Trial:
 
     def _check_params(self):
         """ Checks whether parameters/settings are valid. """
+        reserved = set(self.phase_names) & set(RESERVED_EVENT_TYPES)
+        if reserved:
+            logging.warn(
+                f"Trial {self.trial_nr}: phase name(s) {sorted(reserved)} are also "
+                "used for key presses/MRI pulses in the events file. Session.close() "
+                "treats those rows as responses, so the durations of these phases "
+                "(and of the phase before them) will be wrong. Use another name."
+            )
+
         if self.load_next_during_phase is not None:
 
             if self.timing == 'frames':

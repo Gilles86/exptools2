@@ -15,6 +15,7 @@ from psychopy.monitors import Monitor
 from psychopy import logging
 from psychopy import prefs as psychopy_prefs
 from ..stimuli import create_circle_fixation
+from .trial import RESERVED_EVENT_TYPES
 
 
 class Session:
@@ -285,7 +286,7 @@ class Session:
         self.global_log["onset_abs"] = self.global_log["onset"] + self.exp_start
 
         # Only non-responses have a duration
-        nonresp_idx = ~self.global_log.event_type.isin(["response", "trigger", "pulse"])
+        nonresp_idx = ~self.global_log.event_type.isin(RESERVED_EVENT_TYPES)
         last_phase_onset = self.global_log.loc[nonresp_idx, "onset"].iloc[-1]
         dur_last_phase = self.exp_stop - last_phase_onset
         durations = np.append(
