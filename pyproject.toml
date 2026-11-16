@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "exptools2"
+version = "0.2.0"
+description = "exptools2: stimulus presentation for psychophysics and fMRI experiments (on PsychoPy)"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Tomas Knapen" }, { name = "Lukas Snoek" }, { name = "Gilles de Hollander" }]
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "psychopy>=2023.2",
+    "numpy",
+    "pandas",
+    "pyyaml",
+    "matplotlib",
+    "pillow",
+]
+
+[project.optional-dependencies]
+eyetracker = ["sr-research-pylink"]
+fLoc = ["click"]
+test = ["pytest"]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.26",
+]
+
+[project.urls]
+Homepage = "https://github.com/Gilles86/exptools2"
+Documentation = "https://gilles86.github.io/exptools2/"
+Upstream = "https://github.com/VU-Cog-Sci/exptools2"
+
+[project.scripts]
+exptools2_fLoc = "exptools2.experiments.fLoc.main:main_api"
+
+[tool.setuptools.packages.find]
+include = ["exptools2*"]
+
+[tool.setuptools.package-data]
+exptools2 = ["data/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,6 +1,7 @@
 import os
 import yaml
 import collections
+import collections.abc
 import os.path as op
 import numpy as np
 import pandas as pd
@@ -14,6 +15,7 @@ from psychopy.monitors import Monitor
 from psychopy import logging
 from psychopy import prefs as psychopy_prefs
 from ..stimuli import create_circle_fixation
+from .trial import RESERVED_EVENT_TYPES
 
 
 class Session:
@@ -28,8 +30,10 @@ class Session:
             Name (string) for output-files (e.g., 'sub-01_ses-post_run-1')
         output_dir : str
             Path to output-directory. Default: $PWD/logs.
-        settings_file : str
-            Path to settings file. If None, exptools2's default_settings.yml is used
+        settings_file : str or list of str
+            Path to settings file. If None, exptools2's default_settings.yml is used.
+            A list of paths is merged in order onto the defaults, so later files
+            override earlier ones (e.g. ``['settings/default.yml', 'settings/scanner.yml']``).
 
         attributes
         ----------
@@ -84,12 +88,7 @@ class Session:
             np.arctan(self.monitor.getWidth() / self.monitor.getDistance())
         )
         self.pix_per_deg = self.win.size[0] / self.width_deg
-        self.mouse = Mouse(**self.settings["mouse"])
-
-        if self.settings['mouse'].get('setup'):
-            self.mouse = Mouse(**self.settings['mouse'])
-        else:
-            self.mouse = None
+        self.mouse = self._create_mouse()
 
         self.logfile = self._create_logfile()
         self.default_fix = create_circle_fixation(
@@ -110,14 +109,20 @@ class Session:
             settings = default_settings
             logging.warn("No settings-file given; using default logfile")
         else:
-            if not op.isfile(self.settings_file):
-                raise IOError(f"Settings-file {self.settings_file} does not exist!")
+            if isinstance(self.settings_file, (list, tuple)):
+                settings_files = list(self.settings_file)
+            else:
+                settings_files = [self.settings_file]
 
-            with open(self.settings_file, "r", encoding="utf8") as f_in:
-                user_settings = yaml.safe_load(f_in)
+            for settings_file in settings_files:
+                if not op.isfile(settings_file):
+                    raise IOError(f"Settings-file {settings_file} does not exist!")
 
-            # Update (and potentially overwrite) default settings
-            _merge_settings(default_settings, user_settings)
+                with open(settings_file, "r", encoding="utf8") as f_in:
+                    user_settings = yaml.safe_load(f_in) or {}
+
+                # Update (and potentially overwrite) default settings
+                _merge_settings(default_settings, user_settings)
             settings = default_settings
 
         # Write settings to sub dir
@@ -160,6 +165,18 @@ class Session:
             f"(1 frame = {t_per_frame:.5f})"
         )
         return win
+
+    def _create_mouse(self):
+        """Creates the mouse based on the ``mouse`` settings.
+
+        All keys except ``setup`` are passed to ``psychopy.event.Mouse``
+        (e.g. ``visible``). With ``setup: False`` the mouse cursor is still
+        configured (e.g. hidden), but ``session.mouse`` is set to None.
+        """
+        mouse_settings = dict(self.settings.get("mouse") or {})
+        setup = mouse_settings.pop("setup", True)
+        mouse = Mouse(**mouse_settings)
+        return mouse if setup else None
 
     def _create_logfile(self):
         """Creates a logfile."""
@@ -269,7 +286,7 @@ class Session:
         self.global_log["onset_abs"] = self.global_log["onset"] + self.exp_start
 
         # Only non-responses have a duration
-        nonresp_idx = ~self.global_log.event_type.isin(["response", "trigger", "pulse"])
+        nonresp_idx = ~self.global_log.event_type.isin(RESERVED_EVENT_TYPES)
         last_phase_onset = self.global_log.loc[nonresp_idx, "onset"].iloc[-1]
         dur_last_phase = self.exp_stop - last_phase_onset
         durations = np.append(
@@ -304,6 +321,7 @@ class Session:
             ylim=(-0.01, 0.125),
         )
         fig.savefig(op.join(self.output_dir, self.output_str + "_frames.pdf"))
+        plt.close(fig)
 
         if self.mri_simulator is not None:
             self.mri_simulator.stop()

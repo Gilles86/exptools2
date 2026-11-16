@@ -53,8 +53,15 @@ class PylinkEyetrackerSession(Session):
 
     def _create_tracker(self):
         """ Creates tracker object upon initialization. """
-        if not self.eyetracker_on or not PYLINK_AVAILABLE:
+        if not self.eyetracker_on:
             return None
+
+        if not PYLINK_AVAILABLE:
+            raise ImportError(
+                "eyetracker_on=True, but pylink is not installed. Install "
+                "SR Research's pylink (e.g. `pip install sr-research-pylink`) "
+                "or create the session with eyetracker_on=False."
+            )
 
         tracker = pylink.EyeLink(self.et_settings.get('address'))
         pylink.flushGetkeyQueue()
@@ -90,7 +97,9 @@ class PylinkEyetrackerSession(Session):
         """ Starts calibration eyetracker . """
         # Note: doTrackerSetup already calls
         # sendMessage("DISPLAY_COORDS" + win.size)
-		# sendCommand("screen_pixel_coords" + win.size)
+        # sendCommand("screen_pixel_coords" + win.size)
+        if not self.eyetracker_on:  # nothing to calibrate
+            return
         self.tracker.doTrackerSetup(*self.win.size)
 
     def start_recording_eyetracker(self):

@@ -19,6 +19,10 @@ monitor:
 
 mouse:
   visible: False
+  setup: True  # False: hide/configure the cursor, but session.mouse is None
+
+keyboard:
+  quit_key: q  # key that closes + quits from inside any trial; null disables it
 
 eyetracker:
   address: '100.1.1.1'

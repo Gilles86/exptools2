@@ -1,0 +1,72 @@
+site_name: exptools2
+site_description: PsychoPy experiments with timed phases, logging, MRI triggers and eye tracking
+site_url: https://gilles86.github.io/exptools2/
+repo_url: https://github.com/Gilles86/exptools2
+repo_name: Gilles86/exptools2
+edit_uri: edit/master/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle: {icon: material/brightness-7, name: Dark mode}
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle: {icon: material/brightness-4, name: Light mode}
+
+nav:
+  - Home: index.md
+  - Manual:
+      - Overview: manual/index.md
+      - Session: manual/session.md
+      - Trials, phases and timing: manual/trials.md
+      - Settings: manual/settings.md
+      - Logging and output files: manual/logging.md
+      - Keyboard, mouse and responses: manual/responses.md
+      - MRI triggers and scanner sync: manual/mri.md
+      - Eye tracking (EyeLink): manual/eyetracking.md
+      - Display, degrees and scaling: manual/display.md
+      - Running in the UZH Econ labs: manual/econ-labs.md
+  - Known traps: traps.md
+  - API reference: api.md
+  - Changes in this fork: changes.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets:
+      base_path: [docs]
+      check_paths: true
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: numpy
+            show_source: true
+            show_root_heading: true
+            members_order: source
+            filters: ["!^_"]
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
