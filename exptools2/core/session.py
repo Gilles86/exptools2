@@ -29,8 +29,10 @@ class Session:
             Name (string) for output-files (e.g., 'sub-01_ses-post_run-1')
         output_dir : str
             Path to output-directory. Default: $PWD/logs.
-        settings_file : str
-            Path to settings file. If None, exptools2's default_settings.yml is used
+        settings_file : str or list of str
+            Path to settings file. If None, exptools2's default_settings.yml is used.
+            A list of paths is merged in order onto the defaults, so later files
+            override earlier ones (e.g. ``['settings/default.yml', 'settings/scanner.yml']``).
 
         attributes
         ----------
@@ -106,14 +108,20 @@ class Session:
             settings = default_settings
             logging.warn("No settings-file given; using default logfile")
         else:
-            if not op.isfile(self.settings_file):
-                raise IOError(f"Settings-file {self.settings_file} does not exist!")
+            if isinstance(self.settings_file, (list, tuple)):
+                settings_files = list(self.settings_file)
+            else:
+                settings_files = [self.settings_file]
 
-            with open(self.settings_file, "r", encoding="utf8") as f_in:
-                user_settings = yaml.safe_load(f_in)
+            for settings_file in settings_files:
+                if not op.isfile(settings_file):
+                    raise IOError(f"Settings-file {settings_file} does not exist!")
 
-            # Update (and potentially overwrite) default settings
-            _merge_settings(default_settings, user_settings)
+                with open(settings_file, "r", encoding="utf8") as f_in:
+                    user_settings = yaml.safe_load(f_in) or {}
+
+                # Update (and potentially overwrite) default settings
+                _merge_settings(default_settings, user_settings)
             settings = default_settings
 
         # Write settings to sub dir

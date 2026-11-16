@@ -67,7 +67,12 @@ def _run(tmp_path, settings_file, fake_keys=None):
 
 
 def test_session_writes_outputs(tmp_path):
-    session = _run(tmp_path, _settings(tmp_path))
+    override = tmp_path / "override.yml"
+    override.write_text(yaml.safe_dump({"window": {"color": [-1, -1, -1]}, "custom": {"x": 1}}))
+    session = _run(tmp_path, [_settings(tmp_path), str(override)])
+    assert session.settings["custom"] == {"x": 1}
+    assert session.settings["window"]["color"] == [-1, -1, -1]
+    assert session.settings["window"]["size"] == [400, 300]  # from the first file
     out = tmp_path / "logs"
     events = pd.read_csv(out / "sub-test_events.tsv", sep="\t")
     # real key presses (the window grabs focus) are logged as responses
