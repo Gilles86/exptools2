@@ -2,47 +2,39 @@
 The `exptools` Python package provides a way to easily and quickly create (psychophysics) experiments with accurate ("non-slip") timing. It is basically a wrapper around [Psychopy](https://www.psychopy.org/) which automates the boring but important parts of building experiments (such as stimulus timing and logging), while maintaining the flexibility of Psychopy in terms of how you want to present your stimuli and run your experiment. 
 
 
-# Installation instructions
-## Installation using conda
-The latest master branch on github can be installed by creating a [conda](https://docs.conda.io/projects/conda/en/latest/index.html) environment using the following commands:
+**Documentation: <https://gilles86.github.io/exptools2/>** (manual, known traps, API
+reference; source in `docs/`). This repository is the consolidated fork the Ruff group
+uses; it contains everything in [VU-Cog-Sci/exptools2](https://github.com/VU-Cog-Sci/exptools2)
+`master` and is a drop-in replacement for it.
+
+# Installation
+
+exptools2 does not install PsychoPy for you; list both in your experiment's
+`pyproject.toml` (or environment), and pin exptools2 to a commit:
+
+```toml
+[project]
+dependencies = ["exptools2", "psychopy>=2026.1"]
+
+[tool.uv.sources]
+exptools2 = { git = "https://github.com/Gilles86/exptools2", rev = "<commit>" }
 ```
-conda create -n exptools2 python=3.9
-conda activate exptools2
-conda install numpy scipy matplotlib pandas pyopengl pillow lxml openpyxl xlrd configobj pyyaml gevent greenlet msgpack-python psutil pytables requests[security] cffi seaborn wxpython cython pyzmq pyserial qt pyqt
-conda install -c conda-forge pyglet pysoundfile python-bidi moviepy pyosf
-pip install zmq json-tricks pyparallel sounddevice pygame pysoundcard psychopy_ext psychopy
-pip install git+https://github.com/VU-Cog-Sci/exptools2/
+
+or
+
+```
+uv pip install "exptools2 @ git+https://github.com/Gilles86/exptools2@<commit>"
+pip install "exptools2[psychopy] @ git+https://github.com/Gilles86/exptools2@<commit>"  # also installs PsychoPy
 ```
 
-For using the eyetracker, you also need to install `pylink`.
+For the EyeLink eye tracker you also need SR Research's `pylink`
+(`pip install sr-research-pylink`, or the wheel from the EyeLink Developers Kit).
 
-If you want to run a `exptools2`-script, you now should always start by activating the `exptool2`-conda environment. This is done in a shell by typing:
-```
-conda activate exptools2
-```
+To build the documentation locally: `pip install -e ".[docs]" && mkdocs serve`.
+Tests: `pip install -e ".[test,psychopy]" && pytest` (add `EXPTOOLS2_DISPLAY_TESTS=1`
+to also run the tests that open a window).
 
-## Manual installation
-If you have the `EyeLink`-folder from `SRResearch`, you can install `pylink` for various python versions. You can find the wheels in `/usr/share/EyeLink/SampleExperiments/Python/wheels`, which are directly pip-installable for your given python version. 
-
-
-The package is not yet pip-installable. To install it, clone the repository (`git clone https://github.com/VU-Cog-Sci/exptools2.git`) and install the package (`python setup.py install`). The package assumes that the following dependencies are installed:
-
-- `psychopy>=3.0.5`
-- `pyyaml`
-- `pyglet==1.3.2`
-- `pandas>=0.23.0`
-- `numpy>=1.14`
-- `msgpack_numpy`
-- `matplotlib`
-
-If you want to use the eytracker functionality with Eyelink eyetrackers, you also need the `pylink` package (for Python3!) from SR Research. This is not yet publicly available; if you need it, send Lukas an email.
-
-## Troubleshooting the installation
-*You're getting a `pyglet` error when `exptools2` tries to initialize a Window.*
-This is a weird bug caused when installing a `pyglet` version > 1.3.2. Uninstall `pyglet` and install version 1.3.2. specifically (`pip install pyglet==1.3.2`).
-
-*You're getting a `pylink` error when `exptools2` tries to initialize the Eyelink eyetracker.*
-Did you install the `pylink` library (for Python 3.6)? Note that this is not yet publicly available, but Lukas has beta builds (for Windows/Mac/Linux) available, so send him an email if you need this. Another issue could be that you're using Python 3.7, which is not compatible with the `pylink` package (yet).
+The sections below are the original tutorial from the upstream repository.
 
 # Usage
 ## How does it work?
