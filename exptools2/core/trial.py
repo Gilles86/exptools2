@@ -167,7 +167,8 @@ class Trial:
         """ Logs responses/triggers """
         events = event.getKeys(timeStamped=self.session.clock)
         if events:
-            if 'q' in [ev[0] for ev in events]:  # specific key in settings?
+            quit_key = _get_quit_key(self.session)
+            if quit_key is not None and quit_key in [ev[0] for ev in events]:
                 self.session.close()
                 self.session.quit()
 
@@ -289,3 +290,14 @@ class Trial:
                 break
 
             self.phase += 1  # advance phase
+
+
+def _get_quit_key(session):
+    """ Returns the key that aborts the experiment from within a trial.
+
+    Read from ``settings['keyboard']['quit_key']`` (default: 'q').
+    Set it to null/None in the settings file to disable quitting by key.
+    """
+    settings = getattr(session, 'settings', None) or {}
+    keyboard = settings.get('keyboard') or {}
+    return keyboard.get('quit_key', 'q')

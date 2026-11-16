@@ -1,6 +1,7 @@
 import os
 import yaml
 import collections
+import collections.abc
 import os.path as op
 import numpy as np
 import pandas as pd
@@ -84,12 +85,7 @@ class Session:
             np.arctan(self.monitor.getWidth() / self.monitor.getDistance())
         )
         self.pix_per_deg = self.win.size[0] / self.width_deg
-        self.mouse = Mouse(**self.settings["mouse"])
-
-        if self.settings['mouse'].get('setup'):
-            self.mouse = Mouse(**self.settings['mouse'])
-        else:
-            self.mouse = None
+        self.mouse = self._create_mouse()
 
         self.logfile = self._create_logfile()
         self.default_fix = create_circle_fixation(
@@ -160,6 +156,18 @@ class Session:
             f"(1 frame = {t_per_frame:.5f})"
         )
         return win
+
+    def _create_mouse(self):
+        """Creates the mouse based on the ``mouse`` settings.
+
+        All keys except ``setup`` are passed to ``psychopy.event.Mouse``
+        (e.g. ``visible``). With ``setup: False`` the mouse cursor is still
+        configured (e.g. hidden), but ``session.mouse`` is set to None.
+        """
+        mouse_settings = dict(self.settings.get("mouse") or {})
+        setup = mouse_settings.pop("setup", True)
+        mouse = Mouse(**mouse_settings)
+        return mouse if setup else None
 
     def _create_logfile(self):
         """Creates a logfile."""
@@ -304,6 +312,7 @@ class Session:
             ylim=(-0.01, 0.125),
         )
         fig.savefig(op.join(self.output_dir, self.output_str + "_frames.pdf"))
+        plt.close(fig)
 
         if self.mri_simulator is not None:
             self.mri_simulator.stop()
