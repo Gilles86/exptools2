@@ -24,7 +24,7 @@ or
 
 ```
 uv pip install "exptools2 @ git+https://github.com/Gilles86/exptools2@<commit>"
-pip install "exptools2[psychopy] @ git+https://github.com/Gilles86/exptools2@<commit>"  # also installs PsychoPy
+pip install "exptools2 @ git+https://github.com/Gilles86/exptools2@<commit>"
 ```
 
 For the EyeLink eye tracker you also need SR Research's `pylink`

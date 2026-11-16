@@ -54,7 +54,7 @@ only workaround there was not to call it and log the keys yourself.)
 ## Mouse
 
 `session.mouse` is a `psychopy.event.Mouse` created from the `mouse:` settings
-(default `visible: False`). With `mouse: {setup: False}` it is `None` (the cursor
+(default `visible: False`: the cursor is hidden, which is what you want in almost every experiment; set `visible: True` only for tasks that use the mouse). With `mouse: {setup: False}` it is `None` (the cursor
 settings are still applied). Many tasks create their own instead:
 `self.mouse = event.Mouse(visible=False)` in the Session subclass.
 

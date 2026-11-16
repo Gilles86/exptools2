@@ -15,7 +15,7 @@ unchanged.
 - A warning when a phase is named `response`, `trigger` or `pulse`.
 - `eyetracker_on=True` without pylink raises a clear `ImportError`;
   `calibrate_eyetracker()` is a no-op with the eye tracker off.
-- Packaging: `pyproject.toml`; light dependencies; PsychoPy as the `psychopy` extra.
+- Packaging: `pyproject.toml`; light dependencies; PsychoPy is a required dependency (>= 2023.2).
 - Tests (`tests/`), this documentation.
 
 ## Earlier fork-only changes (2022–2024)

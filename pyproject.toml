@@ -18,11 +18,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Scientific/Engineering",
 ]
-# PsychoPy is deliberately NOT a hard dependency: most setups install it
-# themselves (uv project, conda, standalone), and a pip resolve of psychopy
-# inside an existing conda env can replace half of it. Use the `psychopy`
-# extra (or list psychopy in your own project) to get it.
 dependencies = [
+    "psychopy>=2023.2",
     "numpy",
     "pandas",
     "pyyaml",
@@ -31,7 +28,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-psychopy = ["psychopy>=2023.2"]
 eyetracker = ["sr-research-pylink"]
 fLoc = ["click"]
 test = ["pytest"]

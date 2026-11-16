@@ -50,11 +50,11 @@ Other ways:
 
 ```bash
 uv pip install "exptools2 @ git+https://github.com/Gilles86/exptools2@<commit>"
-pip install "exptools2[psychopy] @ git+https://github.com/Gilles86/exptools2@<commit>"   # also installs PsychoPy
+pip install "exptools2 @ git+https://github.com/Gilles86/exptools2@<commit>"
 pip install -e path/to/exptools2                                                         # a git submodule
 ```
 
-Extras: `psychopy` (PsychoPy itself), `eyetracker` (SR Research `pylink`), `docs`, `test`.
+PsychoPy is a dependency and is installed with exptools2. Extras: `eyetracker` (SR Research `pylink`), `docs`, `test`.
 PsychoPy 2023.2 to 2026.2 are known to work; Python 3.10 is the safest choice for
 PsychoPy.
 
